@@ -95,23 +95,3 @@ my.boot <- function(data, indices, outcome, predictors, focal = NULL){
     )
   }
 }
-
-#Run rwa on the data
-myrwa <- rwa(df, outcome = outcome, predictors = predictors)
-
-#Call the function above {my.boot} within the bootstrap function built in R
-myBootstrap <- boot(df, my.boot, R=num.bootstraps, outcome = outcome, predictors = predictors, focal = focal) #run the bootstrap
-
-#Get the bca CIs 
-ci.results <- tidy(myBootstrap,conf.int=TRUE,conf.method="bca")
-
-#Print Results----
-num.predictors <- nrow(myrwa$result) #calculate the number of predictors for formatting
-print(myrwa)
-print(kable(cbind(myrwa$result[1], ci.results[1:num.predictors,c(4,5)]), caption = "CIs around the raw Relative Weights"))
-print(kable(cbind(myrwa$result[1], ci.results[I(num.predictors+1):I(num.predictors*2),c(4,5)]), caption = "CIs around the difference between a Relative Weight for a substantive variable and a random variable. If zero is included in the interval that predictor is not significant"))
-if (compare == "Yes") { 
-  print(kable(cbind(comparisons, ci.results[I((num.predictors*2)+1):nrow(ci.results),c(4,5)]), caption = "CIs around the difference between two substantive variables. If zero is included in the interval, those two predictors are not significantly different from one another"))
-}
-
-
