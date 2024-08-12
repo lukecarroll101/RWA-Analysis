@@ -44,3 +44,10 @@ columns_to_analyse <- list(
 # write.csv(df[!names(df) %in% names(df[57:71])], file = "RWA CSV 2024 UPDATED.csv", row.names = FALSE)
 
 # variables <- c(colnames(df)[57:(ncol(df)-2)], "K6", "DASS")
+
+# means_sum <- means_sum %>%
+#   mutate(colour = case_when(
+#     means > 17 ~ "darkgreen",
+#     means >= 14 & means <= 17 ~ "gold",
+#     means < 14 ~ "orange"
+#   ))
