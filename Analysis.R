@@ -19,6 +19,13 @@ colnames(means_sum) <- "Variables"
 means_sum$means <- as.numeric(lapply(df[,sum_cols[!sum_cols %in% c("K6_sum" , "DASS_sum")]], function(x) mean(x, na.rm = TRUE)))
 write.csv(means_sum, file = "means_sum.csv", row.names = FALSE)
 
+means_sum <- means_sum %>%
+  mutate(colour = case_when(
+    means > 17 ~ "darkgreen",
+    means >= 14 & means <= 17 ~ "gold",
+    means < 14 ~ "orange"
+  ))
+
 ggplot(means_sum, aes(means, Variables, fill = colour)) +
   geom_col() +
   geom_text(aes(label = round(means, 2)), 
@@ -46,7 +53,7 @@ loc_means_sum <- df |>
   summarise(across(sum_cols, mean, na.rm = TRUE))
 write.csv(loc_means_sum, file = "loc_means_sum.csv", row.names = FALSE)
 
-data_long_sum <- means_sum[!names(means_sum) %in% c("DASS_sum", "K6_sum")] %>%
+data_long_sum <- loc_means_sum[!names(loc_means_sum) %in% c("DASS_sum", "K6_sum")] %>%
   pivot_longer(cols = -OrgID, names_to = "Variable", values_to = "Value")
 write.csv(data_long_sum, file = "data_long_sum.csv", row.names = FALSE)
 
