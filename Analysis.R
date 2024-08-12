@@ -19,13 +19,6 @@ colnames(means_sum) <- "Variables"
 means_sum$means <- as.numeric(lapply(df[,sum_cols[!sum_cols %in% c("K6_sum" , "DASS_sum")]], function(x) mean(x, na.rm = TRUE)))
 write.csv(means_sum, file = "means_sum.csv", row.names = FALSE)
 
-means_sum <- means_sum %>%
-  mutate(colour = case_when(
-    means > 17 ~ "darkgreen",
-    means >= 14 & means <= 17 ~ "gold",
-    means < 14 ~ "orange"
-  ))
-
 ggplot(means_sum, aes(means, Variables, fill = colour)) +
   geom_col() +
   geom_text(aes(label = round(means, 2)), 
