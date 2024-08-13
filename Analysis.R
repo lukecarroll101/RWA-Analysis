@@ -1,3 +1,6 @@
+x <- "This is for demonstration purpose - please ignore"
+
+
 library(dplyr); library(psych); library(tidyverse)
 source("MultipleRegression.R"); source("Columns_to_analyse.R")
 df <- read.csv("RWA CSV 2024.csv")
