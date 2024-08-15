@@ -9,8 +9,23 @@ df[, columns_to_analyse$K6] <- lapply(df[, columns_to_analyse$K6], function(x) a
 for (name in names(columns_to_analyse)) {
   df[,paste(name,"_sum", sep = "")] <- as.data.frame(rowSums(df[, columns_to_analyse[[name]]]))
 }
+
 df$DASS42_sum <- df$DASS_sum * 2
 sum_cols <- names(df[72:86])
+
+# Checking for missing data
+as.matrix(colSums(is.na(df)))
+nrow(df[complete.cases(df[,sum_cols]) == TRUE,])
+typeof(df[911,]$Gender)
+df[sapply(df, is.character)] <- lapply(df[sapply(df, is.character)], function(x) ifelse(x == "", NA, x))
+as.matrix(colSums(is.na(df)))
+nrow(df[complete.cases(df[,sum_cols]) == TRUE,])
+
+# Checking if DASS data is missing at random for Organisation 4. Comparing the means of K6 scores for the missing V not missing.
+proxy <- df[df$OrgID == 4,]
+proxy$missing_DASS_sum <- is.na(proxy$DASS_sum)
+t_test_result <- t.test(K6_sum ~ missing_DASS_sum, data = proxy)
+
 
 descriptives <- describe(df[,sum_cols])
 
@@ -39,15 +54,6 @@ ggplot(means_sum, aes(means, Variables, fill = colour)) +
   scale_fill_identity() + 
   theme_minimal()
 
-ggplot(means_sum, aes(x = means, y = Variables, fill = color)) +
-  geom_col() +
-  labs(title = "Bar Graph of Variables by OrgID",
-       x = "Variable",
-       y = "Value",
-       fill = "Color") +
-  scale_fill_identity() +  # Ensures that the colors are used as they are in the color column
-  theme_minimal()
-
 loc_means_sum <- df |>
   group_by(OrgID) |>
   summarise(across(sum_cols, mean, na.rm = TRUE))
@@ -74,8 +80,6 @@ for (i in sum_cols) {
     print(TukeyHSD(model, conf.level=.95))
   }
 }
-
-
 
 desc <- list()
 desc$cor <- cor(df[,sum_cols], method = "pearson", use = "pair")
@@ -106,6 +110,7 @@ rwa_models$DASS$result
 K6_means <- dplyr::tibble(predictors)
 K6_means$means <- descriptives[predictors, "mean"]
 K6_means$weights <- rwa_models$K6_sum$result[,3]
+write.csv(K6_means, file = "K6_means.csv", row.names = FALSE)
 
 DASS_means <- dplyr::tibble(predictors)
 DASS_means$means <- descriptives[predictors, "mean"]
@@ -114,10 +119,11 @@ write.csv(DASS_means, file = "DassMeans.csv", row.names = FALSE)
 
 ggplot(K6_means, aes(means, weights, label = predictors)) +  
   geom_point(colour = "blue", size = 3) +
-  labs(title = "Plot of Weights v Mean for DASS",
+  labs(title = "Plot of Weights v Mean for K6",
        x = "Mean",
        y = "Weight") +
-  geom_text(nudge_y = 1)
+  geom_text(nudge_y = 1)+
+  theme_minimal()
 
 ggplot(DASS_means, aes(means, weights, label = predictors)) +  
   geom_point(colour = "blue", size = 3) +
