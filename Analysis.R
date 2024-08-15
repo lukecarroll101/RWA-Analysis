@@ -1,6 +1,3 @@
-x <- "This is for demonstration purpose - please ignore"
-
-
 library(dplyr); library(psych); library(tidyverse)
 source("MultipleRegression.R"); source("Columns_to_analyse.R")
 df <- read.csv("RWA CSV 2024.csv")
@@ -68,7 +65,7 @@ ggplot(data_long_sum, aes(Value, Variable, fill = factor(OrgID))) +
        fill = "OrgID") +
   theme_minimal()
 
-for (i in variables) {
+for (i in sum_cols) {
   formula <- as.formula(paste(i, "~ factor(OrgID)"))
   model <- aov(formula, data = df)
   print(i)
@@ -77,6 +74,8 @@ for (i in variables) {
     print(TukeyHSD(model, conf.level=.95))
   }
 }
+
+
 
 desc <- list()
 desc$cor <- cor(df[,sum_cols], method = "pearson", use = "pair")

@@ -17,6 +17,31 @@ columns_to_analyse <- list(
 )
 
 
+# Checking the impact of the missing DASS data from org 4
+# df$DASS_sum[df$OrgID == 4]
+# 
+# 
+# table(complete.cases(df))
+# as.matrix(colSums(is.na(df)))
+# 
+# test <- df[df$OrgID == 4, ]
+# test <- test[,c("K6_sum","DASS_sum")]
+# test$grouping <- ifelse(is.na(test$DASS), 1, 0)
+# 
+# aov_result <- aov(K6_sum ~ factor(grouping), data = test)
+# summary(aov_result)
+# print(TukeyHSD(aov_result, conf.level=.95))
+# mean(test$K6_sum[test$grouping == 1], na.rm = TRUE)
+# mean(test$K6_sum[test$grouping == 0], na.rm = TRUE)
+# mean(test$K6_sum, na.rm = TRUE)
+# 
+# 
+# 
+# table(is.na(test$K6_sum))
+# table(df[!is.na(df$DASS), ]["OrgID"])
+
+
+
 # meansdf <- dplyr::data_frame(variables)
 # for (org in 1:4){
 #   print(org)
