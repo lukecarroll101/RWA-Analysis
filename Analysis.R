@@ -17,6 +17,8 @@ sum_cols <- names(df[72:86])
 as.matrix(colSums(is.na(df)))
 nrow(df[complete.cases(df[,sum_cols]) == TRUE,])
 typeof(df[911,]$Gender)
+
+# Coerce empty character values to NA
 df[sapply(df, is.character)] <- lapply(df[sapply(df, is.character)], function(x) ifelse(x == "", NA, x))
 as.matrix(colSums(is.na(df)))
 nrow(df[complete.cases(df[,sum_cols]) == TRUE,])
@@ -26,8 +28,28 @@ proxy <- df[df$OrgID == 4,]
 proxy$missing_DASS_sum <- is.na(proxy$DASS_sum)
 t_test_result <- t.test(K6_sum ~ missing_DASS_sum, data = proxy)
 
-
 descriptives <- describe(df[,sum_cols])
+demographics <- as.data.frame.matrix(table(df[,c("Gender","AgeCat")], useNA = "always")) 
+demographics$Total <- rowSums(demographics)
+demographics["Total",] <- colSums(demographics)
+demographics_percent <- round(demographics / 1300 * 100, 1)
+demographics_percent <- demographics_percent |>
+  mutate(across(everything(), ~ifelse(. == 0, "-", .)))
+write.csv(demographics, file = "demographics.csv")
+write.csv(demographics_percent, file = "demographics_percent.csv")
+
+df$GenderCondensed <- ifelse(df$Gender %in% c("Male", "Female",NA), df$Gender, "Other")
+demographicsCondensed <- as.data.frame.matrix(table(df[,c("GenderCondensed","AgeCat")], useNA = "always")) 
+demographicsCondensed$Total <- rowSums(demographicsCondensed)
+demographicsCondensed["Total",] <- colSums(demographicsCondensed)
+demographics_percentCondensed <- round(demographicsCondensed / 1300 * 100, 1)
+demographics_percentCondensed <- demographics_percentCondensed |>
+  mutate(across(everything(), ~ifelse(. == 0, "-", .)))
+write.csv(demographicsCondensed, file = "demographicsCondensed.csv")
+write.csv(demographics_percentCondensed, file = "demographics_percentCondensed.csv")
+
+orgNo <- as.data.frame(table(df$OrgID))
+write.csv(orgNo, file = "orgNo.csv")
 
 means_sum <- dplyr::data_frame(sum_cols[!sum_cols %in% c("K6_sum" , "DASS_sum")])
 colnames(means_sum) <- "Variables"
@@ -88,6 +110,7 @@ desc$sd <- sapply(na.omit(df[,sum_cols]), sd)
 desc$cron <- as.numeric(sapply(columns_to_analyse, function(sum_cols) psych::alpha(df[, sum_cols])$total$raw_alpha))
 desc$tab <- round(data.frame(mean = desc$mean, sd = desc$sd, cron = desc$cron, desc$cor),2)
 desc$tab
+write.csv(desc$tab, file = "Descriptives.csv")
 
 # What are the key drivers of the outcome variable?
 # Create the varaibales and assign values
