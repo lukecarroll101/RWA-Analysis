@@ -16,7 +16,7 @@ sum_cols <- names(df[72:86])
 # Checking for missing data
 as.matrix(colSums(is.na(df)))
 nrow(df[complete.cases(df[,sum_cols]) == TRUE,])
-typeof(df[911,]$Gender)
+typeof(df[911,]$Gender) # The value for this is an empty character. Need to coerce to NA
 
 # Coerce empty character values to NA
 df[sapply(df, is.character)] <- lapply(df[sapply(df, is.character)], function(x) ifelse(x == "", NA, x))
