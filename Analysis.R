@@ -80,6 +80,7 @@ loc_means_sum <- df |>
   group_by(OrgID) |>
   summarise(across(sum_cols, mean, na.rm = TRUE))
 write.csv(loc_means_sum, file = "loc_means_sum.csv", row.names = FALSE)
+loc_means_sum$DASS42_sum <- loc_means_sum$DASS_sum * 2
 
 data_long_sum <- loc_means_sum[!names(loc_means_sum) %in% c("DASS_sum", "K6_sum")] %>%
   pivot_longer(cols = -OrgID, names_to = "Variable", values_to = "Value")
@@ -112,19 +113,26 @@ desc$tab <- round(data.frame(mean = desc$mean, sd = desc$sd, cron = desc$cron, d
 desc$tab
 write.csv(desc$tab, file = "Descriptives.csv")
 
+# Checking to see how many employees meet the clinical cut-offs for the K6 and the DASS
+NROW(filter(df, DASS42_sum >= 15))
+NROW(filter(df, DASS42_sum >= 26))
+NROW(filter(df, K6_sum >= 13))
+
+
 # What are the key drivers of the outcome variable?
 # Create the varaibales and assign values
 outcomes <- c("K6_sum", "DASS_sum")
 predictors <- sum_cols[!sum_cols %in% outcomes]
 # num.bootstraps <- 1500
 
+
 # Run rwa on the data
 rwa_models <- list()
 for (outcome in outcomes){
-  rwa_models[[outcome]] <- rwa(df, outcome = outcome, predictors = predictors)
+  rwa_models[[outcome]] <- rwa(df[df$K6_sum >= 13,], outcome = outcome, predictors = predictors) 
 }
 
-# Print Results----
+# Print Results
 print(paste("R-Squared:", rwa_models$K6$rsquare, sep = " "))
 rwa_models$K6$result
 print(paste("R-Squared:", rwa_models$DASS$rsquare, sep = " "))
