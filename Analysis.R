@@ -129,7 +129,7 @@ predictors <- sum_cols[!sum_cols %in% outcomes]
 # Run rwa on the data
 rwa_models <- list()
 for (outcome in outcomes){
-  rwa_models[[outcome]] <- rwa(df[df$K6_sum >= 13,], outcome = outcome, predictors = predictors) 
+  rwa_models[[outcome]] <- rwa(df, outcome = outcome, predictors = predictors) 
 }
 
 # Print Results
