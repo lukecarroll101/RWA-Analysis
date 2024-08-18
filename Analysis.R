@@ -1,4 +1,4 @@
-library(dplyr); library(psych); library(tidyverse)
+library(dplyr); library(psych); library(tidyverse); library(stats)
 source("MultipleRegression.R"); source("Columns_to_analyse.R")
 df <- read.csv("RWA CSV 2024.csv")
 
@@ -131,6 +131,15 @@ rwa_models <- list()
 for (outcome in outcomes){
   rwa_models[[outcome]] <- rwa(df, outcome = outcome, predictors = predictors) 
 }
+
+# Conducting RWAs for emps above the cutoff scores
+DASS_cutoff <- 15
+rwa(filter(df, DASS42_sum >= DASS_cutoff), outcome = outcome, predictors = predictors) 
+summary(lm(paste("DASS42_sum ~ ", paste0(predictors, collapse = " + ")),filter(df, DASS42_sum >= DASS_cutoff)))
+
+K6_cutoff <- 13
+rwa(filter(df, K6_sum >= K6_cutoff), outcome = outcome, predictors = predictors) 
+summary(lm(paste("K6_sum ~ ", paste0(predictors, collapse = " + ")),filter(df, K6_sum >= K6_cutoff)))
 
 # Print Results
 print(paste("R-Squared:", rwa_models$K6$rsquare, sep = " "))
