@@ -179,8 +179,6 @@ myBootstrap <- boot(df, my.boot, R=num.bootstraps, outcome = outcome, predictors
 # Get the bca CIs 
 ci.results <- tidy(myBootstrap, conf.int=TRUE, conf.method="bca")
 
-print(kable(cbind(myrwa$result[1], ci.results[1:num.predictors,c(4,5)]), caption = "CIs around the raw Relative Weights"))
-print(kable(cbind(myrwa$result[1], ci.results[I(num.predictors+1):I(num.predictors*2),c(4,5)]), caption = "CIs around the difference between a Relative Weight for a substantive variable and a random variable. If zero is included in the interval that predictor is not significant"))
-if (compare == "Yes") { 
-  print(kable(cbind(comparisons, ci.results[I((num.predictors*2)+1):nrow(ci.results),c(4,5)]), caption = "CIs around the difference between two substantive variables. If zero is included in the interval, those two predictors are not significantly different from one another"))
-}
+print(kable(cbind(rwa_models$K6_sum$result[1], ci.results[1:num.predictors,c(4,5)]), caption = "CIs around the raw Relative Weights"))
+print(kable(cbind(rwa_models$K6_sum$result[1], ci.results[I(num.predictors+1):I(num.predictors*2),c(4,5)]), caption = "CIs around the difference between a Relative Weight for a substantive variable and a random variable. If zero is included in the interval that predictor is not significant"))
+
